@@ -1,0 +1,66 @@
+.tagify--outside {
+    border: 0;
+}
+
+.tagify--outside .tagify__input {
+    order: -1;
+    flex: 100%;
+    border: 1px solid var(--tags-border-color);
+    transition: .1s;
+}
+
+.tagify--outside .tagify__input:hover {
+    border-color: var(--tags-hover-border-color);
+}
+
+.tagify--outside.tagify--focus .tagify__input {
+    transition: 0s;
+    border-color: var(--tags-focus-border-color);
+}
+
+ul.preview_uploaded_files {
+    list-style-type: none;
+    margin: 20px 0 0 0;
+    padding: 0;
+}
+
+ul.preview_uploaded_files li {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    float: left;
+    margin: 20px 20px 0 0;
+    padding: 2px;
+    width: 158px;
+    height: 159px;
+    line-height: 150px;
+    position: relative;
+}
+
+ul.preview_uploaded_files li img.img-thumb {
+    width: 150px;
+    height: 150px;
+}
+
+ul.preview_uploaded_files .ui-selected {
+    background: red;
+}
+
+ul.preview_uploaded_files .highlight {
+    border: 1px dashed #000;
+    width: 150px;
+    background-color: #ccc;
+    border-radius: 5px;
+}
+
+ul.preview_uploaded_files .delete-btn {
+    width: 46px;
+    border: 0;
+    position: absolute;
+    top: -14px;
+    right: -33px;
+}
+
+.bg-success {
+    padding: 7px;
+}

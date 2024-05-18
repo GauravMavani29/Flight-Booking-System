@@ -1,4 +1,4 @@
-<svg height="128px" width="128px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+<svg height="64px" width="64px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
     xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve">
     <g>
         <path style="fill:#2D527C;" d="M393.537,198.521h-62.341c-7.504,0-13.59-6.084-13.59-13.59c0-7.506,6.086-13.59,13.59-13.59h62.341
