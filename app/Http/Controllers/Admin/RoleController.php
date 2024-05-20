@@ -13,7 +13,7 @@ class RoleController extends Controller
     public function __construct()
     {
         // Staff Permission Check
-        // $this->middleware('role:Super Admin');
+        $this->middleware('role:super-admin');
     }
 
     /**
@@ -47,7 +47,7 @@ class RoleController extends Controller
     public function store(Request $request)
     {
         $role = Role::create(['name' => $request->name, 'guard_name' => 'web']);
-        $permissions = Permission::whereIn('id', $request->permissions)->get();
+        $permissions = Permission::whereIn('id', $request->permissions == null ? [] : $request->permissions)->get();
         $role->syncPermissions($permissions);
         return redirect()->route('admin.role.index');
     }

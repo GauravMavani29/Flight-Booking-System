@@ -14,7 +14,7 @@ class StaffController extends Controller
     public function __construct()
     {
         // Staff Permission Check
-        // $this->middleware('role:Super Admin');
+        $this->middleware('role:super-admin');
     }
 
     /**
