@@ -138,8 +138,30 @@
         .seat label:hover .tooltip {
             display: block;
         }
-    </style>
 
+        .btn-submit {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .btn-submit:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+    </style>
     <div class="container mt-5">
         <h1 class="text-center mb-4">Flight {{ $flight->name }} Seat Selection</h1>
 
@@ -149,53 +171,73 @@
                 <span class="info-color booked-info" style="margin-left: 20px;"></span> Booked seats
             </p>
         </div>
+        <form action="{{ route('store-booking', $flight->slug) }}" method="POST" id="book-flight">
+            <div class="seat-limit-box">
+                <label for="seatCount">Select number of seats (max 6): </label>
+                <input type="number" id="seatCount" name="seatCount" min="1" max="6" value="1">
+                <label for="randomSelection">
+                    <input type="checkbox" id="randomSelection" name="randomSelection"> Random Selection
+                </label>
+                <button id="submitBtn" class="btn-submit" disabled onclick="submitForm()">Proceed</button><br>
+                <hr style="margin: 8px;">
+                <label for="avoidFireExit">
+                    <input type="checkbox" id="avoidFireExit" name="avoidFireExit"> Avoid Fire Exit Seats
+                </label>
+            </div>
 
-        <div class="seat-limit-box">
-            <label for="seatCount">Select number of seats (max 6): </label>
-            <input type="number" id="seatCount" name="seatCount" min="1" max="6" value="1">
-        </div>
-
-        @foreach (['first class', 'business class', 'economy class'] as $class)
-            @if (!empty($seats[$class]))
-                <div class="col-12 text-center mb-4">
-                    <h5>{{ ucfirst($class) }}</h5>
-                    @foreach ($seats[$class] as $number => $rowSeats)
-                        @php
-                            $isNearExitRow = false;
-                            foreach ($rowSeats as $seat) {
-                                if ($seat['is_near_exit']) {
-                                    $isNearExitRow = true;
-                                    break;
+            @csrf
+            @foreach (['first class', 'business class', 'economy class'] as $class)
+                @if (!empty($seats[$class]))
+                    <div class="col-12 text-center mb-4">
+                        <h5>{{ ucfirst($class) }}</h5>
+                        @foreach ($seats[$class] as $number => $rowSeats)
+                            @php
+                                $isNearExitRow = false;
+                                foreach ($rowSeats as $seat) {
+                                    if ($seat['is_near_exit']) {
+                                        $isNearExitRow = true;
+                                        break;
+                                    }
                                 }
-                            }
-                        @endphp
-                        @if ($isNearExitRow)
-                            <div class="fire-exit-label">Fire Exit</div>
-                        @endif
-                        <div class="row-container">
-                            @foreach ($rowSeats as $seat)
-                                <div
-                                    class="seat {{ str_replace(' ', '-', strtolower($seat['class'])) }} {{ $seat['is_locked'] ? 'locked disabled' : '' }} {{ $seat['is_booked'] ? 'booked disabled' : '' }}">
-                                    <input type="checkbox" id="seat{{ $seat['id'] }}" class="seat-checkbox"
-                                        {{ $seat['is_locked'] || $seat['is_booked'] ? 'disabled' : '' }}>
-                                    <label
-                                        for="seat{{ $seat['id'] }}">{{ $seat['number'] }}{{ $seat['alphabet'] }}<span
-                                            class="tooltip">£{{ $seat['price'] }}</span></label>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endforeach
-                </div>
-            @endif
-        @endforeach
+                            @endphp
+                            @if ($isNearExitRow)
+                                <div class="fire-exit-label">Fire Exit</div>
+                            @endif
+                            <div class="row-container">
+                                @foreach ($rowSeats as $seat)
+                                    <div
+                                        class="seat {{ str_replace(' ', '-', strtolower($seat['class'])) }} {{ $seat['is_locked'] ? 'locked disabled' : '' }} {{ $seat['is_booked'] ? 'booked disabled' : '' }}">
+                                        <input type="checkbox" id="seat{{ $seat['id'] }}"
+                                            class="seat-checkbox {{ $seat['is_near_exit'] ? 'is_near_exit' : '' }}"
+                                            {{ $seat['is_locked'] || $seat['is_booked'] ? 'disabled' : '' }}
+                                            name='seats[]' value="{{ $seat['id'] }}">
+                                        <label
+                                            for="seat{{ $seat['id'] }}">{{ $seat['number'] }}{{ $seat['alphabet'] }}
+                                            <span class="tooltip">£{{ $seat['price'] }}</span></label>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+            @endforeach
+            <input type="hidden" id="is_random" name="is_random" value="0">
+        </form>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
             const seatCheckboxes = document.querySelectorAll('.seat-checkbox');
+            const fireExitCheckboxes = document.querySelectorAll('.seat-checkbox.is_near_exit');
             const seatCountInput = document.getElementById('seatCount');
+            const randomSelectionCheckbox = document.getElementById('randomSelection');
+            const avoidFireExitCheckbox = document.getElementById('avoidFireExit');
+            const submitBtn = document.getElementById('submitBtn');
+            const isRandomInput = document.getElementById('is_random');
 
             seatCountInput.addEventListener('change', resetAndApplySeatLimit);
+            randomSelectionCheckbox.addEventListener('change', handleRandomSelectionChange);
+            avoidFireExitCheckbox.addEventListener('change', handleFireExitChange);
 
             seatCheckboxes.forEach(checkbox => {
                 checkbox.addEventListener('change', handleCheckboxChange);
@@ -211,6 +253,7 @@
                     checkbox.disabled = false;
                 });
 
+                handleFireExitChange(); // Apply fire exit avoidance rule if necessary
                 updateSeatLimit(maxSeats);
             }
 
@@ -222,6 +265,8 @@
                         checkbox.disabled = selectedSeats >= maxSeats;
                     }
                 });
+
+                submitBtn.disabled = selectedSeats !== maxSeats && !randomSelectionCheckbox.checked;
             }
 
             function handleCheckboxChange() {
@@ -233,10 +278,46 @@
                         checkbox.disabled = selectedSeats >= maxSeats;
                     }
                 });
+
+                submitBtn.disabled = selectedSeats !== maxSeats && !randomSelectionCheckbox.checked;
+            }
+
+            function handleRandomSelectionChange() {
+                if (randomSelectionCheckbox.checked) {
+                    seatCheckboxes.forEach(checkbox => {
+                        checkbox.checked = false;
+                        checkbox.disabled = true;
+                    });
+                    isRandomInput.value = '1';
+                    submitBtn.disabled = false;
+                } else {
+                    resetAndApplySeatLimit();
+                    isRandomInput.value = '0';
+                }
+            }
+
+            function handleFireExitChange() {
+                fireExitCheckboxes.forEach(checkbox => {
+                    if (avoidFireExitCheckbox.checked) {
+                        checkbox.checked = false;
+                        checkbox.disabled = true;
+                    } else if (!checkbox.closest('.seat').classList.contains('locked') && !checkbox.closest(
+                            '.seat').classList.contains('booked')) {
+                        checkbox.disabled = false;
+                    }
+                });
             }
 
             updateSeatLimit(parseInt(seatCountInput.value)); // Initial call to set the initial state
+
         });
+
+        function submitForm() {
+            const form = document.getElementById('book-flight');
+            if (form) {
+                form.submit();
+            }
+        }
     </script>
 
 </x-app-layout>

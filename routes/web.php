@@ -24,6 +24,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('book-flight/{slug}', [FlightController::class, 'bookFlight'])->name('book-flight');
+
+    Route::post('book-flight/{slug}', [FlightController::class, 'storeBooking'])->name('store-booking');
+
+    Route::post('store-passenger-info/{slug}', [FlightController::class, 'storePassengerInfo'])->name('store-passenger-info');
 });
 
 require __DIR__ . '/auth.php';

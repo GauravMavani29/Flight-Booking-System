@@ -61,8 +61,6 @@
     <script src="{{ asset('assets/js/flight-core.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    {{-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1Jr7axGGkwvHRnNfoOzoVRFV3yOPHJEU&callback=myMap">
-    </script> --}}
     <script>
         var APP_URL = {!! json_encode(url('/')) !!};
         $('#myDataTable')
