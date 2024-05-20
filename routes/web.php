@@ -3,6 +3,7 @@
 use App\Http\Controllers\FlightController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,6 +29,9 @@ Route::middleware('auth')->group(function () {
     Route::post('book-flight/{slug}', [FlightController::class, 'storeBooking'])->name('store-booking');
 
     Route::post('store-passenger-info/{slug}', [FlightController::class, 'storePassengerInfo'])->name('store-passenger-info');
+    Route::get('/bookings/{userId}', [UserController::class, 'bookings'])->name('bookings.index');
+    Route::post('/booking/cancel/{id}', [UserController::class, 'cancelBooking'])->name('cancel-booking');
+
 });
 
 require __DIR__ . '/auth.php';

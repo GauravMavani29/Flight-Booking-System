@@ -102,6 +102,11 @@
 
 
             @forelse ($scheduleFlights as $item)
+                @php
+                    $departureDate = \Carbon\Carbon::parse($item->departure_date);
+                    $arrivalDate = \Carbon\Carbon::parse($item->arrival_date);
+                    $flightDuration = $arrivalDate->diff($departureDate);
+                @endphp
                 <div class="flight-item">
                     <div class="flight-info">
                         <span class="flight-route">
@@ -109,6 +114,9 @@
                             {{ $item->arrivalAirport->name }} ({{ $item->arrivalAirport->country }})
                         </span>
                         <span class="flight-date">{{ $item->departure_date }}</span>
+                        <span class="flight-time">
+                            {{ $flightDuration->h }} hours {{ $flightDuration->i }} minutes
+                        </span>
                     </div>
                     <div class="flight-price">
                         ${{ $item->seatSchedules->min('price') }} - ${{ $item->seatSchedules->max('price') }}

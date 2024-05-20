@@ -222,6 +222,7 @@
                 @endif
             @endforeach
             <input type="hidden" id="is_random" name="is_random" value="0">
+            <input type="hidden" id="fireExitResponsibility" name="fireExitResponsibility" value="0">
         </form>
     </div>
 
@@ -234,6 +235,7 @@
             const avoidFireExitCheckbox = document.getElementById('avoidFireExit');
             const submitBtn = document.getElementById('submitBtn');
             const isRandomInput = document.getElementById('is_random');
+            const fireExitResponsibility = document.getElementById('fireExitResponsibility');
 
             seatCountInput.addEventListener('change', resetAndApplySeatLimit);
             randomSelectionCheckbox.addEventListener('change', handleRandomSelectionChange);
@@ -301,9 +303,11 @@
                     if (avoidFireExitCheckbox.checked) {
                         checkbox.checked = false;
                         checkbox.disabled = true;
+                        fireExitResponsibility.value = '1';
                     } else if (!checkbox.closest('.seat').classList.contains('locked') && !checkbox.closest(
                             '.seat').classList.contains('booked')) {
                         checkbox.disabled = false;
+                        fireExitResponsibility.value = '0';
                     }
                 });
             }

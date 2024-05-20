@@ -157,6 +157,7 @@
                     </script>
                 @endfor
             @endif
+            <input type="hidden" name="fireExitResponsibility" value="{{ $fireExitResponsibility }}">
             <button type="submit" class="btn-submit">Submit</button>
         </form>
     </div>

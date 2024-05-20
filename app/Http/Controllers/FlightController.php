@@ -59,6 +59,7 @@ class FlightController extends Controller
 
     public function storeBooking(Request $req, $slug)
     {
+
         $isRandom = 0;
         if ($req->is_random == 1) {
             $isRandom = 1;
@@ -66,7 +67,7 @@ class FlightController extends Controller
                 ->firstOrFail();
             // count number of seats from
             $seatCount = $req->input('seatCount');
-            return view('passenger-information', ['flight' => $flight, 'isRandom' => $isRandom, 'seatCount' => $seatCount]);
+            return view('passenger-information', ['flight' => $flight, 'isRandom' => $isRandom, 'seatCount' => $seatCount, 'fireExitResponsibility' => $req->fireExitResponsibility]);
         } else {
             $isRandom = 0;
             $seatCount = $req->input('seatCount');
@@ -92,7 +93,7 @@ class FlightController extends Controller
                 $seatClasses[] = $seat->seat->class;
             }
 
-            return view('passenger-information', ['seats' => $seats, 'flight' => $flight, 'isRandom' => $isRandom, 'seatCount' => $seatCount, 'seatClasses' => $seatClasses]);
+            return view('passenger-information', ['seats' => $seats, 'flight' => $flight, 'isRandom' => $isRandom, 'seatCount' => $seatCount, 'seatClasses' => $seatClasses, 'fireExitResponsibility' => $req->fireExitResponsibility]);
         }
 
     }
@@ -116,10 +117,22 @@ class FlightController extends Controller
         $totalAmount = 0;
         $totalDiscount = 0;
 
+        $passengers = $req->input('passengers');
+        $isRandom = $req->input('is_random', 0);
+        $fireExitResponsibility = $req->input('fireExitResponsibility', 0);
+
+        if ($isRandom) {
+            // Handle random seat selection
+            $selectedSeats = $this->allocateRandomSeats($flight->id, count($passengers), $fireExitResponsibility);
+        } else {
+            // Handle pre-selected seats
+            $selectedSeats = array_column($passengers, 'seat');
+        }
+
         // Create booking seats entries
-        foreach ($req->input('passengers') as $passenger) {
+        foreach ($passengers as $index => $passenger) {
             $seatSchedule = SeatSchedule::where('flight_schedule_id', $flight->id)
-                ->where('seat_id', $passenger['seat'])
+                ->where('seat_id', $selectedSeats[$index - 1])
                 ->firstOrFail();
 
             // Calculate the age
@@ -160,6 +173,70 @@ class FlightController extends Controller
         $booking->save();
 
         return redirect()->route('index');
+    }
+
+    private function allocateRandomSeats($flightScheduleId, $numSeats, $fireExitResponsibility)
+    {
+        // Fetch available seats excluding those near fire exits if required
+        $availableSeats = SeatSchedule::join('seats', 'seat_schedules.seat_id', '=', 'seats.id')
+            ->where('seat_schedules.flight_schedule_id', $flightScheduleId)
+            ->where('seat_schedules.is_booked', 0)
+            ->when($fireExitResponsibility == 0, function ($query) {
+                return $query->orderBy('seats.is_near_exit', 'desc');
+            })
+            ->when($fireExitResponsibility == 1, function ($query) {
+                return $query->where('seats.is_near_exit', 0);
+            })
+            ->orderBy('seats.alphabet')
+            ->orderBy('seats.number')
+            ->get(['seats.id', 'seats.alphabet', 'seats.number'])
+            ->toArray();
+        if (count($availableSeats) < $numSeats) {
+            return [];
+        }
+
+        // Implement the algorithm to minimize single scattered seats and prioritize row-wise allocation
+        $allocatedSeats = $this->minimizeScatteredSeats($availableSeats, $numSeats);
+
+        return array_column($allocatedSeats, 'id');
+    }
+
+    private function minimizeScatteredSeats($availableSeats, $numSeats)
+    {
+        // Group seats by row number
+        $rows = [];
+        foreach ($availableSeats as $seat) {
+            $rows[$seat['number']][] = $seat;
+        }
+
+        // Sort rows by the number of available seats in descending order
+        usort($rows, function ($a, $b) {
+            return count($b) - count($a);
+        });
+
+        $allocatedSeats = [];
+
+        // Try to fill up rows that already have some seats booked first
+        foreach ($rows as $row) {
+            if (count($row) >= $numSeats) {
+                $allocatedSeats = array_slice($row, 0, $numSeats);
+                break;
+            }
+        }
+
+        // If not enough seats in a single row, allocate remaining seats row-wise
+        if (count($allocatedSeats) < $numSeats) {
+            foreach ($rows as $row) {
+                $remainingSeats = $numSeats - count($allocatedSeats);
+                $additionalSeats = array_slice($row, 0, $remainingSeats);
+                $allocatedSeats = array_merge($allocatedSeats, $additionalSeats);
+                if (count($allocatedSeats) >= $numSeats) {
+                    break;
+                }
+            }
+        }
+
+        return $allocatedSeats;
     }
 
     private function generateBookingNumber()
