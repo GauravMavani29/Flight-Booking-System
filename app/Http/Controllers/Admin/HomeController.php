@@ -10,12 +10,11 @@ class HomeController extends Controller
     public function __construct()
     {
         // Permission Check
-        // $this->middleware(['permission:admin_dashboard'])->only('index');
+        $this->middleware(['permission:staff'])->only('index');
     }
 
     public function index()
     {
-
         $seats = Seat::where('airplane_id', 2)
             ->orderBy('class')
             ->orderBy('number')

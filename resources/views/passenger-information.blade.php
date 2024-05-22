@@ -97,7 +97,8 @@
             @if ($isRandom == 1)
                 @for ($i = 1; $i <= $seatCount; $i++)
                     <div class="passenger-box">
-                        <h3>Passenger {{ $i }} <strong>{{ $seatClasses[$i - 1] ?? 'Random' }}
+                        <h3>Passenger {{ $i }} <strong>{{ $seatClasses[$i - 1] ?? 'Random' }} -
+                                {{ $seatAlphabets[$i - 1] ?? 'N/A' }} {{ $seatNumbers[$i - 1] ?? 'N/A' }}
                             </strong></h3>
                         <div class="form-group">
                             <label for="passenger_name_{{ $i }}">First Name</label>
@@ -128,7 +129,8 @@
                 @for ($i = 1; $i <= $seatCount; $i++)
                     <div class="passenger-box">
                         <h3>Passenger {{ $i }} <strong>{{ $seatClasses[$i - 1] ?? 'Random' }} -
-                                £{{ $seats[$i - 1]?->price }}</strong></h3>
+                                £{{ $seats[$i - 1]?->price }} -
+                                {{ $seatAlphabets[$i - 1] ?? 'N/A' }}{{ $seatNumbers[$i - 1] ?? 'N/A' }}</strong></h3>
                         <div class="form-group">
                             <label for="passenger_name_{{ $i }}">First Name</label>
                             <input type="text" id="passenger_firstname_{{ $i }}"

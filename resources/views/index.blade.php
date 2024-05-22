@@ -105,7 +105,10 @@
                 @php
                     $departureDate = \Carbon\Carbon::parse($item->departure_date);
                     $arrivalDate = \Carbon\Carbon::parse($item->arrival_date);
-                    $flightDuration = $arrivalDate->diff($departureDate);
+                    // Calculate the difference in hours and minutes
+                    $totalMinutes = $arrivalDate->diffInMinutes($departureDate);
+                    $hours = intdiv($totalMinutes, 60);
+                    $minutes = $totalMinutes % 60;
                 @endphp
                 <div class="flight-item">
                     <div class="flight-info">
@@ -115,7 +118,7 @@
                         </span>
                         <span class="flight-date">{{ $item->departure_date }}</span>
                         <span class="flight-time">
-                            {{ $flightDuration->h }} hours {{ $flightDuration->i }} minutes
+                            {{ $hours }} hours, {{ $minutes }} minutes
                         </span>
                     </div>
                     <div class="flight-price">

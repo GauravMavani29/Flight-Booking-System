@@ -35,6 +35,28 @@
                                 permissions</span></a></li>
                 </ul>
             </li>
+            <li class="collapsed">
+                <a class="m-link" data-bs-toggle="collapse" data-bs-target="#bookings" href="#">
+                    <i class="icofont-ssl-security fs-5"></i><span>Bookings</span> <span
+                        class="arrow icofont-rounded-down fs-5 ms-auto text-end"></span></a>
+                <!-- Menu: Sub menu ul -->
+                <ul class="sub-menu  collapse" id="bookings">
+                    <li><a class="ms-link " href="{{ route('admin.bookings.index') }}"><span class="ms-link-text"><i
+                                    class="icofont-swoosh-right"></i>&nbsp;All
+                                bookings</span></a></li>
+                </ul>
+            </li>
+            <li class="collapsed">
+                <a class="m-link" data-bs-toggle="collapse" data-bs-target="#flights" href="#">
+                    <i class="icofont-ssl-security fs-5"></i><span>Flights</span> <span
+                        class="arrow icofont-rounded-down fs-5 ms-auto text-end"></span></a>
+                <!-- Menu: Sub menu ul -->
+                <ul class="sub-menu  collapse" id="flights">
+                    <li><a class="ms-link " href="{{ route('admin.schedule-flights.index') }}"><span
+                                class="ms-link-text"><i class="icofont-swoosh-right"></i>&nbsp;All
+                                Schedule Flights</span></a></li>
+                </ul>
+            </li>
             <li><a class="m-link" href="{{ route('admin.logout') }}"><i class="icofont-logout fs-5 "></i>
                     <span class="ms-link-text">Signout</span></a></li>
         </ul>

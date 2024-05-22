@@ -21,7 +21,7 @@ class ReleaseSeatLocks extends Command
     {
 
         // Define the time limit for releasing locks
-        $lockTimeLimit = Carbon::now()->subMinutes(15);
+        $lockTimeLimit = Carbon::now()->subMinutes(10);
 
         // Find all seats that are locked and the lock time has expired
         $seats = SeatSchedule::where('is_locked', 1)

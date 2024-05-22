@@ -9,6 +9,12 @@ class SeatSchedule extends Model
 {
     use HasFactory;
     public $timestamps = false;
+    public $fillable = [
+        'flight_schedule_id',
+        'seat_id',
+        'status',
+        'price',
+    ];
 
     public function flightSchedule()
     {

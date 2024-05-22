@@ -9,4 +9,9 @@ class Airplane extends Model
 {
     use HasFactory;
     public $timestamps = false;
+
+    public function seats()
+    {
+        return $this->hasMany(Seat::class);
+    }
 }

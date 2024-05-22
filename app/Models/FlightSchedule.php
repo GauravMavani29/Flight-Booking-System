@@ -9,6 +9,14 @@ class FlightSchedule extends Model
 {
     use HasFactory;
     public $timestamps = false;
+    protected $fillable = [
+        'airplane_id',
+        'departure_id',
+        'arrival_id',
+        'departure_date',
+        'arrival_date',
+        'slug',
+    ];
 
     public function airplane()
     {
@@ -28,5 +36,10 @@ class FlightSchedule extends Model
     public function seatSchedules()
     {
         return $this->hasMany(SeatSchedule::class, 'flight_schedule_id');
+    }
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
     }
 }

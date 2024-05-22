@@ -58,66 +58,7 @@
                 padding: 10px;
             }
         }
-    </style>
-    <div class="container">
-        <h1>Customer Bookings</h1>
-        @if (session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
-        @if (session('error'))
-            <div class="alert alert-danger">{{ session('error') }}</div>
-        @endif
-        <div class="table-responsive">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Booking Number</th>
-                        <th>Amount</th>
-                        <th>Total Discount</th>
-                        <th>Booking Time</th>
-                        <th>Flight Schedule</th>
-                        <th>Seats</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($bookings as $booking)
-                        @php
-                            $departureDate = \Carbon\Carbon::parse($booking->flightSchedule->departure_date);
-                            $currentTime = \Carbon\Carbon::now();
-                            $hoursDifference = $departureDate->diffInHours($currentTime);
-                        @endphp
-                        <tr>
-                            <td>{{ $booking->booking_number }}</td>
-                            <td>${{ number_format($booking->amount, 2) }}</td>
-                            <td>${{ number_format($booking->total_discount, 2) }}</td>
-                            <td>{{ $booking->booking_time }}</td>
-                            <td>{{ $booking->flightSchedule->slug }}</td>
-                            <td>
-                                @foreach ($booking->bookingSeats as $seat)
-                                    {{ $seat->first_name }} {{ $seat->last_name }}
-                                    ({{ $seat->seatSchedule->seat->number }}{{ $seat->seatSchedule->seat->alphabet }})
-                                    <br>
-                                @endforeach
-                            </td>
-                            <td>
-                                @if ($hoursDifference > 72)
-                                    <form action="{{ route('cancel-booking', $booking->id) }}" method="POST"
-                                        onsubmit="return confirmCancel()">
-                                        @csrf
-                                        <button type="submit" class="cancel-button">Cancel Booking</button>
-                                    </form>
-                                @else
-                                    <span class="cancel-message">Cannot cancel within 72 hours of departure</span>
-                                @endif
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <style>
+
         .cancel-button {
             background-color: red;
             color: white;
@@ -150,6 +91,65 @@
             border-color: #ebccd1;
         }
     </style>
+
+    <div class="container">
+        <h1>Customer Bookings</h1>
+        @if (session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
+        @if (session('error'))
+            <div class="alert alert-danger">{{ session('error') }}</div>
+        @endif
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Booking Number</th>
+                        <th>Amount</th>
+                        <th>Total Discount</th>
+                        <th>Booking Time</th>
+                        <th>Flight Schedule</th>
+                        <th>Seats</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($bookings as $booking)
+                        @php
+                            $departureDate = \Carbon\Carbon::parse($booking->flightSchedule->departure_date);
+                            $currentTime = \Carbon\Carbon::now();
+                            $hoursDifference = $departureDate->diffInHours($currentTime);
+                        @endphp
+                        <tr>
+                            <td>{{ $booking->booking_number }}</td>
+                            <td>£{{ number_format($booking->amount, 2) }}</td>
+                            <td>£{{ number_format($booking->total_discount, 2) }}</td>
+                            <td>{{ $booking->booking_time }}</td>
+                            <td>{{ $booking->flightSchedule->slug }}</td>
+                            <td>
+                                @foreach ($booking->bookingSeats as $seat)
+                                    {{ $seat->first_name }} {{ $seat->last_name }}
+                                    ({{ $seat->seatSchedule->seat->number }}{{ $seat->seatSchedule->seat->alphabet }})
+                                    <br>
+                                @endforeach
+                            </td>
+                            <td>
+                                @if ($hoursDifference > 72)
+                                    <form action="{{ route('cancel-booking', $booking->id) }}" method="POST"
+                                        onsubmit="return confirmCancel()">
+                                        @csrf
+                                        <button type="submit" class="cancel-button">Cancel Booking</button>
+                                    </form>
+                                @else
+                                    <span class="cancel-message">Cannot cancel within 72 hours of departure</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
 
     <script>
         function confirmCancel() {

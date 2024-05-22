@@ -79,7 +79,6 @@ class FlightController extends Controller
             $seats = SeatSchedule::where('flight_schedule_id', $flight->id)
                 ->whereIn('seat_id', $seat_ids)
                 ->get();
-
             // set is_lock == 1
 
             $seats->each(function ($seat) {
@@ -93,7 +92,15 @@ class FlightController extends Controller
                 $seatClasses[] = $seat->seat->class;
             }
 
-            return view('passenger-information', ['seats' => $seats, 'flight' => $flight, 'isRandom' => $isRandom, 'seatCount' => $seatCount, 'seatClasses' => $seatClasses, 'fireExitResponsibility' => $req->fireExitResponsibility]);
+            foreach ($seats as $seat) {
+                $seatAlphabets[] = $seat->seat->alphabet;
+            }
+
+            foreach ($seats as $seat) {
+                $seatNumbers[] = $seat->seat->number;
+            }
+
+            return view('passenger-information', ['seats' => $seats, 'flight' => $flight, 'isRandom' => $isRandom, 'seatCount' => $seatCount, 'seatClasses' => $seatClasses, 'fireExitResponsibility' => $req->fireExitResponsibility, 'seatAlphabets' => $seatAlphabets, 'seatNumbers' => $seatNumbers]);
         }
 
     }
@@ -112,6 +119,11 @@ class FlightController extends Controller
         $booking->amount = 0; // Initialize amount
         $booking->total_discount = 0; // Initialize total discount
         $booking->booking_time = now();
+        if ($isRandom) {
+            $booking->is_random = 1;
+        } else {
+            $booking->is_random = 0;
+        }
         $booking->save();
 
         $totalAmount = 0;
