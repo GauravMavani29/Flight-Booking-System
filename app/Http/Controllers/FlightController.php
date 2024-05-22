@@ -119,6 +119,8 @@ class FlightController extends Controller
         $booking->amount = 0; // Initialize amount
         $booking->total_discount = 0; // Initialize total discount
         $booking->booking_time = now();
+        $isRandom = $req->input('is_random', 0);
+
         if ($isRandom) {
             $booking->is_random = 1;
         } else {
@@ -130,19 +132,36 @@ class FlightController extends Controller
         $totalDiscount = 0;
 
         $passengers = $req->input('passengers');
-        $isRandom = $req->input('is_random', 0);
+
         $fireExitResponsibility = $req->input('fireExitResponsibility', 0);
 
         if ($isRandom) {
             // Handle random seat selection
             $selectedSeats = $this->allocateRandomSeats($flight->id, count($passengers), $fireExitResponsibility);
+
         } else {
             // Handle pre-selected seats
             $selectedSeats = array_column($passengers, 'seat');
+            // Ensure all seat numbers are strings
+            $seats = array_map('strval', $selectedSeats);
+
+            // find seat schedules nd store in selectedSeats
+
+            $selectedSeats = SeatSchedule::where('flight_schedule_id', $flight->id)
+                ->whereIn('id', $seats)
+                ->get();
+
+            // make new array and store seat_id in selectedSeats
+
+            $selectedSeats = $selectedSeats->map(function ($seat) {
+                return $seat->seat_id;
+            })->toArray();
+
         }
 
         // Create booking seats entries
         foreach ($passengers as $index => $passenger) {
+
             $seatSchedule = SeatSchedule::where('flight_schedule_id', $flight->id)
                 ->where('seat_id', $selectedSeats[$index - 1])
                 ->firstOrFail();

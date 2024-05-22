@@ -10,7 +10,7 @@ class HomeController extends Controller
     public function __construct()
     {
         // Permission Check
-        $this->middleware(['permission:staff'])->only('index');
+        // $this->middleware(['permission:staff'])->only('index');
     }
 
     public function index()

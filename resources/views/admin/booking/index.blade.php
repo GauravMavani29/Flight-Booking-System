@@ -5,8 +5,8 @@
             <div
                 class="card-header no-bg d-flex align-items-center justify-content-between border-bottom flex-wrap bg-transparent py-3 px-0">
                 <h3 class="fw-bold mb-0">All Bookings</h3>
-                <a href={{ route('admin.permission.create') }} class="btn btn-primary btn-set-task w-sm-100 py-2 px-5"><i
-                        class="icofont-plus-circle me-2 fs-6"></i>Add New Permission</a>
+                {{-- <a href={{ route('admin.permission.create') }} class="btn btn-primary btn-set-task w-sm-100 py-2 px-5"><i
+                        class="icofont-plus-circle me-2 fs-6"></i>Add New Booking</a> --}}
             </div>
         </div>
     </div> <!-- Row end  -->
@@ -17,18 +17,20 @@
                     <table id="myDataTable" class="table-hover mb-0 table align-middle" style="width: 100%;">
                         <thead>
                             <tr>
+                                <th>Id</th>
                                 <th>Booking Number</th>
                                 <th>Amount</th>
                                 <th>Total Discount</th>
                                 <th>Booking Time</th>
                                 <th>Flight Schedule</th>
                                 <th>Seats</th>
-                                <th>Actions</th>
+                                <th>Type</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($bookings as $booking)
                                 <tr>
+                                    <td>{{ $booking->id }}</td>
                                     <td>{{ $booking->booking_number }}</td>
                                     <td>${{ number_format($booking->amount, 2) }}</td>
                                     <td>${{ number_format($booking->total_discount, 2) }}</td>
@@ -41,7 +43,7 @@
                                             <br>
                                         @endforeach
                                     </td>
-                                    <td></td>
+                                    <td>{{ $booking->booking_via }}</td>
                                 </tr>
                             @endforeach
                         </tbody>

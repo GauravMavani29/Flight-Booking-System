@@ -57,6 +57,8 @@
                                             <a data-href="{{ route('admin.schedule-flights.delete', $item->id) }}"
                                                 href="#" class="btn btn-danger btn-sm confirm-delete">Delete</a>
                                         @endif
+                                        <a href="{{ route('admin.book-flight', $item->slug) }}"
+                                            class="btn btn-primary btn-sm">Book</a>
                                         <a href="{{ route('admin.schedule-flights.show', $item->slug) }}"
                                             class="btn btn-success btn-sm">Show</a>
                                     </td>

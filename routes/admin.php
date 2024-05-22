@@ -41,4 +41,12 @@ Route::group(['middleware' => ['auth', 'verified'], 'as' => 'admin.'], function 
     //unlock seat
     Route::get('/schedule_flights/{id}/unlock', [FlightController::class, 'unlockSeat'])->name('schedule-flights.unlock');
 
+    // bookseats
+
+    Route::get('book-flight/{slug}', [FlightController::class, 'bookFlight'])->name('book-flight');
+
+    Route::post('book-flight/{slug}', [FlightController::class, 'storeBooking'])->name('store-booking');
+
+    Route::post('store-passenger-info/{slug}', [FlightController::class, 'storePassengerInfo'])->name('store-passenger-info');
+
 });
