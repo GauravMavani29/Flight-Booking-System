@@ -15,7 +15,20 @@ use Illuminate\Http\Request;
 
 class FlightController extends Controller
 {
-    //
+
+    public function __construct()
+    {
+
+        // make above permission as seprate line
+
+        $this->middleware('permission:show-flight', ['only' => ['show', 'unlockSeat']]);
+        $this->middleware('permission:add-schedule-flight', ['only' => ['create', 'store']]);
+        $this->middleware('permission:edit-schedule-flight', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:schedule-flights', ['only' => ['scheduleFlights']]);
+        $this->middleware('permission:book-seat', ['only' => ['unlockSeat', 'storeBooking', 'storePassengerInfo', 'bookFlight', 'generateBookingNumber']]);
+
+        // super admin can do all
+    }
 
     public function scheduleFlights()
     {
@@ -269,7 +282,7 @@ class FlightController extends Controller
         $booking->total_discount = 0; // Initialize total discount
         $booking->booking_time = now();
         $booking->is_random = 0;
-        $booking->book_type = $req->booking_via;
+        $booking->booking_via = $req->book_type;
         $booking->save();
 
         $totalAmount = 0;

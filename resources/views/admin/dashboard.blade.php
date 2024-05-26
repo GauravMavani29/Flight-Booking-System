@@ -58,27 +58,5 @@
             margin-bottom: 10px;
         }
     </style>
-    <div class="container mt-5">
-        <h1 class="text-center mb-4">Flight 1 Seat Selection</h1>
-        @foreach (['first class', 'business class', 'economy class'] as $class)
-            @if (!empty($seats[$class]))
-                <div class="col-12 text-center mb-4">
-                    <h5>{{ ucfirst($class) }}</h5>
-                    {{-- sort data based on seat number                     --}}
-
-
-                    @foreach ($seats[$class] as $number => $rowSeats)
-                        <div class="row-container">
-                            @foreach ($rowSeats as $seat)
-                                <div class="seat {{ str_replace(' ', '-', strtolower($seat['class'])) }}">
-                                    <input type="checkbox" id="seat{{ $seat['id'] }}">
-                                    <label for="seat{{ $seat['id'] }}">{{ $seat['number'] }}{{ $seat['alphabet'] }}</label>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endforeach
-                </div>
-            @endif
-        @endforeach
-    </div>
+    <h1>Admin Dashboard</h1>
 @endsection

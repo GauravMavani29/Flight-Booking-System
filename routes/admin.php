@@ -12,7 +12,7 @@ Route::get('logout', function () {
     return redirect('/');
 })->name('admin.logout');
 
-Route::group(['middleware' => ['auth', 'verified'], 'as' => 'admin.'], function () {
+Route::group(['middleware' => ['auth', 'verified', 'IsAuthorized'], 'as' => 'admin.'], function () {
 
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
     Route::resource('staff', StaffController::class);
