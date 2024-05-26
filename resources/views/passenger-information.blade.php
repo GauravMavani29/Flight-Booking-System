@@ -160,7 +160,7 @@
                 @endfor
             @endif
             <input type="hidden" name="fireExitResponsibility" value="{{ $fireExitResponsibility }}">
-            <button type="submit" class="btn-submit">Submit</button>
+            <button type="submit" class="btn-submit">Pay Now</button>
         </form>
     </div>
 
